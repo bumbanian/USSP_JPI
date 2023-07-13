@@ -2,7 +2,10 @@
 title: "USSP23 JPI"
 author: "Gabriel Bowen"
 date: "2023-07-10"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -285,7 +288,7 @@ Cool! We now have a set distributions for all of our model parameters, including
 plot(post$sst, type = "l")
 ```
 
-Here you see the 800 samples we have produced by iterating through the steps we developed above. You see that the result truly is a 'chain'...it is an autocorrelated series of parameter values generated as the algorithm wanders through parameter space searching for values that have high likelihood. 
+Here you see the 800 samples we have produced by iterating through the steps we developed above (we actually generated 1000 samples, but at the end of `invert` we discarded the first 20% to avoid dependence on the initial condition, which we call "burn in"). You see that the result truly is a 'chain'...it is an autocorrelated series of parameter values generated as the algorithm wanders through parameter space searching for values that have high likelihood. 
 
 What we want to see here is that the chain traverses the model space freely and repeatedly. This would suggest that it is exhaustively exploring the distribution of values and beginning to *converge* toward the true distribution. We are starting to see that here, but parts of the parameter 'space' have only been explored once or twice, suggesting we need more samples to 'fill in' the statistical distribution.
 
