@@ -38,7 +38,7 @@ init = function(){
   d18O.sw = rnorm(1, 0.5, 0.5)
   mgca.b = rnorm(1, 0.4, 0.02)
   mgca.m = rnorm(1, 0.096, 0.004)
-  d18O.b = rnorm(1, -1, 0.1)
+  d18O.b = rnorm(1, 2.9, 0.1)
   d18O.m = rnorm(1, 0.213, 0.005)
   
   return(list("sst" = sst, "d18O.sw" = d18O.sw,
@@ -85,7 +85,7 @@ Now that we have a set of parameter values, let's build our PSM and run them thr
 #PSM calcs
 psm = function(parm){
   mgca.f = parm$mgca.b * exp(parm$mgca.m * parm$sst)
-  d18O.f = parm$d18O.sw * parm$d18O.m + parm$d18O.b
+  d18O.f = parm$d18O.sw - parm$sst * parm$d18O.m + parm$d18O.b
   return(list("mgca.f" = mgca.f, "d18O.f" = d18O.f))
 }
 ```
@@ -115,10 +115,10 @@ We will use a simple but effective strategy of proposing a jump from the current
 ```{r prop}
 #proposal
 prop = function(parm){
-  sst = rnorm(1, parm$sst, 0.5)
-  d18O.sw = rnorm(1, parm$d18O.sw, 0.1)
+  sst = rnorm(1, parm$sst, 0.4)
+  d18O.sw = rnorm(1, parm$d18O.sw, 0.08)
   mgca.b = rnorm(1, parm$mgca.b, 0.02)
-  mgca.m = rnorm(1, parm$mgca.m, 0.002)
+  mgca.m = rnorm(1, parm$mgca.m, 0.0012)
   d18O.b = rnorm(1, parm$d18O.b, 0.03)
   d18O.m = rnorm(1, parm$d18O.m, 0.002)
   return(list("sst" = sst, "d18O.sw" = d18O.sw,
@@ -179,7 +179,7 @@ like = function(mod, obs, parm){
   d18O.sw.p = log(max(dnorm(parm$d18O.sw, 0.5, 0.5), small))
   mgca.b.p = log(max(dnorm(parm$mgca.b, 0.4, 0.02), small))
   mgca.m.p = log(max(dnorm(parm$mgca.m, 0.096, 0.004), small))
-  d18O.b.p = log(max(dnorm(parm$d18O.b, -1, 0.1), small))
+  d18O.b.p = log(max(dnorm(parm$d18O.b, 2.9, 0.1), small))
   d18O.m.p = log(max(dnorm(parm$d18O.m, 0.213, 0.005), small))
   
   return(sum(c(mgca.f.p, d18O.f.p, sst.p, d18O.sw.p, mgca.b.p,
@@ -373,7 +373,7 @@ And in order to invert all of the data together we will need to modify our code 
 init.c = function(){
   mgca.b = rnorm(1, 0.4, 0.02)
   mgca.m = rnorm(1, 0.096, 0.004)
-  d18O.b = rnorm(1, -1, 0.1)
+  d18O.b = rnorm(1, 2.9, 0.1)
   d18O.m = rnorm(1, 0.213, 0.005)
   
   return(list("mgca.b" = mgca.b, "mgca.m" = mgca.m,
@@ -390,8 +390,8 @@ init.v = function(){
 #proposal
 prop.c = function(parm){
   mgca.b = rnorm(1, parm$mgca.b, 0.003)
-  mgca.m = rnorm(1, parm$mgca.m, 0.0005)
-  d18O.b = rnorm(1, parm$d18O.b, 0.002)
+  mgca.m = rnorm(1, parm$mgca.m, 0.0004)
+  d18O.b = rnorm(1, parm$d18O.b, 0.02)
   d18O.m = rnorm(1, parm$d18O.m, 0.0007)
   return(list("mgca.b" = mgca.b, "mgca.m" = mgca.m,
               "d18O.b" = d18O.b, "d18O.m" = d18O.m))
@@ -399,7 +399,7 @@ prop.c = function(parm){
 
 prop.v = function(parm){
   sst = rnorm(1, parm$sst, 0.1)
-  d18O.sw = rnorm(1, parm$d18O.sw, 0.05)
+  d18O.sw = rnorm(1, parm$d18O.sw, 0.02)
   return(list("sst" = sst, "d18O.sw" = d18O.sw))
 }
 
@@ -409,7 +409,7 @@ like.c = function(parm){
   #parm
   mgca.b.p = log(max(dnorm(parm$mgca.b, 0.4, 0.02), small))
   mgca.m.p = log(max(dnorm(parm$mgca.m, 0.096, 0.002), small))
-  d18O.b.p = log(max(dnorm(parm$d18O.b, -1, 0.1), small))
+  d18O.b.p = log(max(dnorm(parm$d18O.b, 2.9, 0.1), small))
   d18O.m.p = log(max(dnorm(parm$d18O.m, 0.213, 0.005), small))
   
   return(sum(c(mgca.b.p, mgca.m.p, d18O.b.p, d18O.m.p)))
@@ -519,7 +519,7 @@ Once the functions are compiled we're ready to run the inversion. One important 
 We have now dramatically increased the dimensions of our model, and the amount of time required to run the inversion has increased commensurately. The run below took several minutes on my laptop. Depending on your computer setup ymmv.
 
 ```{r invertAll}
-post = invert.all(obs.all, 1e5)
+post = invert.all(obs.all, 2e5)
 ```
 
 We're running out time, and I won't go through the details of examining the results and testing for convergence (feel free to do this yourself). But before we finish let's use these results to actually try to say something about PETM climate change! First we'll plot the two environmental variables we were hoping to reconstruct in the first place. We'll use the medians of the posterior samples for convenience:

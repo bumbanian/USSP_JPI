@@ -5,7 +5,7 @@ init = function(){
   d18O.sw = rnorm(1, 0.5, 0.5)
   mgca.b = rnorm(1, 0.4, 0.02)
   mgca.m = rnorm(1, 0.096, 0.004)
-  d18O.b = rnorm(1, -1, 0.1)
+  d18O.b = rnorm(1, 2.9, 0.075)
   d18O.m = rnorm(1, 0.213, 0.005)
   
   return(list("sst" = sst, "d18O.sw" = d18O.sw,
@@ -15,10 +15,10 @@ init = function(){
 
 #proposal
 prop = function(parm){
-  sst = rnorm(1, parm$sst, 0.5)
-  d18O.sw = rnorm(1, parm$d18O.sw, 0.1)
+  sst = rnorm(1, parm$sst, 0.4)
+  d18O.sw = rnorm(1, parm$d18O.sw, 0.08)
   mgca.b = rnorm(1, parm$mgca.b, 0.02)
-  mgca.m = rnorm(1, parm$mgca.m, 0.002)
+  mgca.m = rnorm(1, parm$mgca.m, 0.0012)
   d18O.b = rnorm(1, parm$d18O.b, 0.03)
   d18O.m = rnorm(1, parm$d18O.m, 0.002)
   return(list("sst" = sst, "d18O.sw" = d18O.sw,
@@ -40,7 +40,7 @@ like = function(mod, obs, parm){
   d18O.sw.p = log(max(dnorm(parm$d18O.sw, 0.5, 0.5), small))
   mgca.b.p = log(max(dnorm(parm$mgca.b, 0.4, 0.02), small))
   mgca.m.p = log(max(dnorm(parm$mgca.m, 0.096, 0.004), small))
-  d18O.b.p = log(max(dnorm(parm$d18O.b, -1, 0.1), small))
+  d18O.b.p = log(max(dnorm(parm$d18O.b, 2.9, 0.1), small))
   d18O.m.p = log(max(dnorm(parm$d18O.m, 0.213, 0.005), small))
   
   return(sum(c(mgca.f.p, d18O.f.p, sst.p, d18O.sw.p, mgca.b.p,
@@ -50,7 +50,7 @@ like = function(mod, obs, parm){
 #PSM calcs
 psm = function(parm){
   mgca.f = parm$mgca.b * exp(parm$mgca.m * parm$sst)
-  d18O.f = parm$d18O.sw * parm$d18O.m + parm$d18O.b
+  d18O.f = parm$d18O.sw - parm$sst * parm$d18O.m + parm$d18O.b
   return(list("mgca.f" = mgca.f, "d18O.f" = d18O.f))
 }
 
@@ -116,7 +116,7 @@ invert = function(obs, n = 1000, burnin = n/5){
 init.c = function(){
   mgca.b = rnorm(1, 0.4, 0.02)
   mgca.m = rnorm(1, 0.096, 0.004)
-  d18O.b = rnorm(1, -1, 0.1)
+  d18O.b = rnorm(1, 2.9, 0.1)
   d18O.m = rnorm(1, 0.213, 0.005)
   
   return(list("mgca.b" = mgca.b, "mgca.m" = mgca.m,
@@ -133,16 +133,16 @@ init.v = function(){
 #proposal
 prop.c = function(parm){
   mgca.b = rnorm(1, parm$mgca.b, 0.003)
-  mgca.m = rnorm(1, parm$mgca.m, 0.0005) #0006
-  d18O.b = rnorm(1, parm$d18O.b, 0.002)
+  mgca.m = rnorm(1, parm$mgca.m, 0.0004)
+  d18O.b = rnorm(1, parm$d18O.b, 0.02)
   d18O.m = rnorm(1, parm$d18O.m, 0.0007)
   return(list("mgca.b" = mgca.b, "mgca.m" = mgca.m,
               "d18O.b" = d18O.b, "d18O.m" = d18O.m))
 }
 
 prop.v = function(parm){
-  sst = rnorm(1, parm$sst, 0.1) #0.1
-  d18O.sw = rnorm(1, parm$d18O.sw, 0.05)
+  sst = rnorm(1, parm$sst, 0.1)
+  d18O.sw = rnorm(1, parm$d18O.sw, 0.02)
   return(list("sst" = sst, "d18O.sw" = d18O.sw))
 }
 
@@ -152,7 +152,7 @@ like.c = function(parm){
   #parm
   mgca.b.p = log(max(dnorm(parm$mgca.b, 0.4, 0.02), small))
   mgca.m.p = log(max(dnorm(parm$mgca.m, 0.096, 0.002), small))
-  d18O.b.p = log(max(dnorm(parm$d18O.b, -1, 0.1), small))
+  d18O.b.p = log(max(dnorm(parm$d18O.b, 2.9, 0.1), small))
   d18O.m.p = log(max(dnorm(parm$d18O.m, 0.213, 0.005), small))
   
   return(sum(c(mgca.b.p, mgca.m.p, d18O.b.p, d18O.m.p)))

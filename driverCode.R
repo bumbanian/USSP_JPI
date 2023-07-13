@@ -2,8 +2,8 @@
 #measurement
 obs = list("mgca.f" = 5.3, "d18O.f" = -1.7)
 
-post = invert(obs, 1e5)
-post2 = invert(obs, 1e5)
+post = invert(obs, 1e4)
+post2 = invert(obs, 1e4)
 
 #plots
 
@@ -30,24 +30,10 @@ d = data.frame("Depths" = c(0.890,0.940,0.990,1.040,1.090,1.140,1.190,1.200,1.21
                   "d18O.f" = c(-1.43,-1.54,-1.47,-1.67,-1.56,-1.65,-1.67,-1.72,-1.63,-1.68,-1.75,-1.76,-1.89,-1.99,-1.95,-1.93,-2.13,-1.98,-1.99,-1.93,-1.94,-1.9,-1.5,-1.43,-1.42))
 obs.all = list("mgca.f" = d$mgca.f, "d18O.f" = d$d18O.f)
 
-post = invert.all(obs.all, 1e5)
+post = invert.all(obs.all, 1e4)
 
-plot(post$sst[,1], type = "l", ylim = range(post$sst))
-for(i in 2:ncol(post$sst)){
-  lines(post$sst[,i], col = i)
-}
-
-plot(d$mgca.f, apply(post$sst, 2, mean))
-
-plot(post$d18O.sw[,1], type = "l", ylim = range(post$d18O.sw))
-for(i in 2:ncol(post$sst)){
-  lines(post$d18O.sw[,i], col = i)
-}
-
-plot(apply(post$sst, 2, mean), apply(post$d18O.sw, 2, mean))
-
-plot(density(post$sst[,1]))
-
+plot(post$sst[,1], type = "l")
+plot(post$d18O.sw[,1], type = "l")
 plot(post$parms$mgca.b, type = "l")
 plot(post$parms$mgca.m, type = "l")
 plot(post$parms$d18O.b, type = "l")
