@@ -1,7 +1,7 @@
 ---
-title: "USSP23 JPI"
+title: "USSP25 JPI"
 author: "Gabriel Bowen"
-date: "2023-07-10"
+date: "2025-07-26"
 output: 
   html_document:
     toc: true
@@ -298,7 +298,7 @@ Another thing we can do to assess convergence is to compare multiple different (
 ```{r runMCMC2}
 post2 = invert(obs)
 
-plot(post$sst, type = "l")
+plot(post$sst, type = "l", ylim = range(c(post$sst, post2$sst)))
 lines(post2$sst, col = 2)
 ```
 
@@ -563,4 +563,4 @@ In black we have the distribution of possible warming values from our MCMC sampl
 
 Contact me: [gabe.bowen@utah.edu](mailto:gabe.bowen@utah.edu)
 
-More code and resources: [GitHub](https://github.com/bumbanian/USSP23)
+More code and resources: [GitHub](https://github.com/bumbanian/USSP_JPI)
