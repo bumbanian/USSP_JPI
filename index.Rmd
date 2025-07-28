@@ -1,7 +1,7 @@
 ---
 title: "USSP25 JPI"
 author: "Gabriel Bowen"
-date: "2025-07-26"
+date: "2025-07-31"
 output: 
   html_document:
     toc: true
@@ -283,7 +283,7 @@ post = invert(obs)
 summary(post)
 ```
 
-Cool! We have posterior distributions for all of our model parameters, including `sst` and `d18O.sw`, the two we're probably most interested in! But how do we know if they are any good? There's a lot more to learn here, but I'll show you a few simple things we can look at. First, it's really useful to plot at the Markov chain itself. Here's the one we generated for `sst`:
+Cool! We have posterior distributions for all of our model parameters, including `sst` and `d18O.sw`, the two we're probably most interested in! But how do we know if they are any good? There's a lot more to learn here, but I'll show you a few simple things we can look at. First, it's really useful to look at the Markov chain itself. Here's the one we generated for `sst`:
 
 ```{r}
 plot(post$sst, type = "l")
@@ -311,7 +311,7 @@ plot(density(post$sst))
 lines(density(post2$sst), col = 2)
 ```
 
-Hmm, pretty different answers. If we want a reproducible result and to draw statistical conclusions from the results we want better convergence. In order to get better convergence, it looks like we'll need to run longer chains:
+Hmm, pretty different answers. If we want a reproducible answer and would like to draw statistical conclusions from the results we want better convergence. In order to get better convergence, it looks like we'll need to run longer chains:
 
 ```{r runMCMC3}
 post = invert(obs, 1e4)
@@ -325,7 +325,7 @@ plot(post$sst, type = "l")
 lines(post2$sst, col = 2)
 ```
 
-That's looking a little better! We're now seeing that both chains are exploring the same space, and each chain has traversed its parameter space several times. 
+That's looking much better! We're now seeing that both chains are exploring the same space, and each chain has traversed its parameter space several times. 
 
 Let's look at the posterior distributions for each chain. This time we'll also compare them with the prior distribution that we used.
 
